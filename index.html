@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale = 1'>
+    <link rel='stylesheet' type='text/css' href='assets/css/main.css'>
+    <script src="https://kit.fontawesome.com/56864f7d8e.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <main>
+        <form class='input-block' enctype="multipart/form-data">
+            <div class='col2 btns'>
+                <!-- Кнопка загрузки файлов -->
+                <div class='input-wrapper'>
+                    <input id='input-file' name='file' class='input-file' type='file' method='post'
+                        onchange="readFile(this)" multiple>
+                    <label for='input-file' class='input-file-button load-btn'>
+                        <span class='input-file-icon-wrapper load-icon'><i class="fas fa-file-download"></i></span>
+                        <span class='input-file-button-text'>Выберите файл</span>
+                    </label>
+                </div>
+                
+                <!-- Кнопка очистки формы от выведенных данных и повторной загрузки -->
+                <div class='input-wrapper'>
+                    <input id='delete-file' name='file' class='input-file' type='reset' onclick = 'resetForm()'>
+                    <label for='delete-file' class='input-file-button delete-btn'>
+                        <span class='input-file-icon-wrapper delete-icon'><i class="far fa-trash-alt"></i></span>
+                        <span class='input-file-button-text'>Очистить форму</span>
+                    </label>
+                </div>
+
+                
+            </div>
+
+            <div class='col2'>
+                <textarea id='textarea' readonly ></textarea>
+            </div>
+
+
+        </form>
+
+
+    </main>
+
+    <script src='assets/js/main.js'></script>
+</body>
+
+</html>
