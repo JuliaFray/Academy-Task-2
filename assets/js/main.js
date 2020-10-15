@@ -20,6 +20,7 @@ Array.prototype.forEach.call(inputs, function (input) {
 
 //функция создания input
 function createInput(form, tempFields) {
+    
     var input = [];
     var label = [];
     
@@ -28,7 +29,9 @@ function createInput(form, tempFields) {
         div.className = 'formBlock';
         if (k.input.type == 'technology') {
             input = document.createElement('select');
-            input.required = k.input.required;
+            if (k.input.required) {
+                input.required = k.input.required;
+            }
             for (var i of k.input.technologies) {
                 let option = document.createElement('option')
                 option.text = i;
@@ -41,7 +44,9 @@ function createInput(form, tempFields) {
             div.appendChild(input)
         } else if (k.input.type == 'color') {
             input = document.createElement('select');
-            input.required = k.input.required;
+            if (k.input.required) {
+                input.required = k.input.required;
+            }
             for (var i of k.input.colors) {
                 let option = document.createElement('option')
                 option.text = i;
@@ -55,12 +60,17 @@ function createInput(form, tempFields) {
         } else {
             input = document.createElement('input');
             input.type = k.input.type;
-            input.required = k.input.required;
+            if (k.input.required) {
+                input.required = k.input.required;
+            }
             if (k.input.checked == 'true') {
                 input.setAttribute('checked', input)
             }
             k.input.placeholder ? input.placeholder = k.input.placeholder : '';
-            input.ref = k.input.ref;
+            if (k.input.ref) {
+                input.ref = k.input.ref;
+            }
+            
             div.appendChild(input)
         }
         
@@ -70,6 +80,7 @@ function createInput(form, tempFields) {
             label.innerHTML = k.label;
             div.appendChild(label);
         }
+        
 
         if(k.input.mask) {
             input.pattern = k.input.mask;
