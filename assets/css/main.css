@@ -103,10 +103,22 @@ form {
     display: inline-block
 }
 
-.formBlockWithCheck {
+.formBlockWithoutInput {
     display: flex;
     justify-content: space-between;
     align-items: center
+}
+
+.formBlockWithoutInput a {
+    margin-left: 10px;
+    color: #333;
+    text-decoration: none;
+    text-shadow: 1px 0 2px #333;
+}
+
+.formBlockWithoutInput a:hover {
+    text-decoration: underline;
+    cursor: pointer
 }
 
 .formBlock p {

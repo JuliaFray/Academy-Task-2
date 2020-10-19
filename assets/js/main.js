@@ -1,37 +1,14 @@
-//оформление кнопки загрузки. отображение количества загруженных файлов
-let inputs = document.querySelectorAll('.input-file');
-Array.prototype.forEach.call(inputs, function (input) {
-    let label = input.nextElementSibling,
-        labelVal = document.querySelector('.input-file-button-text').innerText;
-
-    input.addEventListener('change', function (e) {
-        let countFiles = '';
-        if (this.files && this.files.length >= 1)
-            countFiles = this.files.length;
-
-        if (countFiles) {
-            label.querySelector('.input-file-button-text').innerText = 'Выбрано файлов: ' + countFiles;
-        } else {
-            label.querySelector('.input-file-button-text').innerText = labelVal
-        }
-
-    })
-})
-
 //функция создания input
 function createInput(form, tempFields) {
-    
     var input = [];
     var label = [];
-    
+
     for (var k of tempFields) {
         var div = document.createElement('div');
         div.className = 'formBlock';
         if (k.input.type == 'technology') {
             input = document.createElement('select');
-            if (k.input.required) {
-                input.required = k.input.required;
-            }
+            input.required = k.input.required;
             for (var i of k.input.technologies) {
                 let option = document.createElement('option')
                 option.text = i;
@@ -44,50 +21,76 @@ function createInput(form, tempFields) {
             div.appendChild(input)
         } else if (k.input.type == 'color') {
             input = document.createElement('select');
-            if (k.input.required) {
-                input.required = k.input.required;
+            input.required = k.input.required;
+            
+
+            for (var i = 0; i <= k.input.colors.length; i++) {
+                if (k.input.colors[i]) {
+                    let option = document.createElement('option');
+//                    console.log(k.input.colors[i])
+                    option.text = k.input.colors[i];
+                    option.value = k.input.colors[i];
+                    input.appendChild(option);
+                }
+
             }
-            for (var i of k.input.colors) {
-                let option = document.createElement('option')
-                option.text = i;
-                option.value = i;
-                input.appendChild(option)
-            }
+
             if (k.input.multiple) {
                 input.setAttribute('multiple', input)
             }
+
             div.appendChild(input)
         } else {
             input = document.createElement('input');
             input.type = k.input.type;
-            if (k.input.required) {
-                input.required = k.input.required;
-            }
+            input.required = k.input.required;
             if (k.input.checked == 'true') {
                 input.setAttribute('checked', input)
             }
             k.input.placeholder ? input.placeholder = k.input.placeholder : '';
-            if (k.input.ref) {
-                input.ref = k.input.ref;
-            }
-            
+            input.ref = k.input.ref;
             div.appendChild(input)
+            if (k.input.filetype) {
+                var filetype = []
+                for (var ft of k.input.filetype) {
+                    filetype.push('.' + ft);
+                    input.accept = filetype
+                }
+
+            } else {
+                input.accept = 'image/*'
+            }
         }
-        
+
         if (k.label) {
             label = document.createElement('label');
             label.setAttribute('for', input);
             label.innerHTML = k.label;
             div.appendChild(label);
         }
-        
 
-        if(k.input.mask) {
-            input.pattern = k.input.mask;
+        if (k.input.mask) {
+            createMask(k, input)
         }
         form.appendChild(div);
     }
 }
+
+const createMask = (k, input) => {
+    var pattern = k.input.mask;
+    input.addEventListener('focus', function (e) {
+        input.placeholder = pattern;
+        console.log(pattern);
+        console.log(input.value)
+        //        if (input.value !== pattern) {
+        //            console.log(pattern)
+        //            input.style.borderColor = 'red'
+        //        }
+    })
+}
+
+
+
 
 //функция создания кнопок
 function createButton(form, tempButtons) {
@@ -108,7 +111,7 @@ function createButton(form, tempButtons) {
 //функция создания ref
 function createReferences(form, tempRef) {
     var div = document.createElement('div');
-    div.className = 'formBlockWithCheck';
+    div.className = 'formBlockWithoutInput';
 
     for (var k of tempRef) {
         if (k.input) {
@@ -122,8 +125,12 @@ function createReferences(form, tempRef) {
             }
             div.appendChild(input)
         } else {
-            var text = document.createElement('p');
-            text.ref = k.ref;
+
+            if (k.ref) {
+                var text = document.createElement('a');
+                text.href = k.ref;
+            }
+
             var textWithoutRef = document.createElement('p');
             text.innerText = k.text;
             var twr = 'text without ref'
@@ -152,7 +159,7 @@ function createForm(data) {
 
         if (key == 'fields') {
             var tempFields = data[key];
-            createInput(form, tempFields);  
+            createInput(form, tempFields);
         }
 
         if (key == 'references') {
@@ -160,11 +167,54 @@ function createForm(data) {
             createReferences(form, tempRef)
         }
     }
+
+    var select = document.querySelector('select');
+    if (select) {
+        select.addEventListener('change', function (e) {
+            var options = select.querySelectorAll('option');
+            var count = options.length;
+            for (var o of options) {
+                if (o.selected) {
+                    form.style.backgroundColor = o.value
+                }
+            }
+        });
+    }
+
 };
+
+//оформление кнопки загрузки. отображение количества загруженных файлов
+let inputs = document.querySelectorAll('.input-file');
+
+Array.prototype.forEach.call(inputs, function (input) {
+    let label = input.nextElementSibling,
+        labelVal = document.querySelector('.input-file-button-text').innerText;
+    let countFiles = '';
+
+    input.addEventListener('change', function (e) {
+        if (!countFiles) {
+            if (this.files && this.files.length >= 1)
+                countFiles = this.files.length;
+        } else {
+            if (this.files && this.files.length >= 1)
+                countFiles = countFiles + this.files.leng
+        }
+        if (countFiles) {
+            label.querySelector('.input-file-button-text').innerText = 'Выбрано файлов: ' + countFiles;
+        } else {
+            label.querySelector('.input-file-button-text').innerText = labelVal
+        }
+        //        
+
+
+    })
+})
 
 //загрузка всех файлов, чтение данных как текст и вызов функции формирования формы
 function readFile(input) {
+
     for (var i = 0; i < input.files.length; i++) {
+
         var file = input.files[i];
         //для каждого файла создается свой filereader
         let reader = new FileReader();
@@ -177,18 +227,29 @@ function readFile(input) {
         };
         reader.readAsText(file);
     };
+
+
 };
 
 //повторное генерирование форм из файлов
 function regenFile() {
+
     var input = document.querySelector('.input-file');
-    readFile(input)
+    readFile(input);
+    var countFiles = input.files.length;
+    document.querySelector('.input-file-button-text').innerText = 'Выбрано файлов: ' + countFiles;
 }
 
 //удаление всех форм
 function resetForm() {
+    var input = document.querySelector('.input-file');
+
+
+
     var form = document.querySelectorAll('form');
     for (var f of form) {
         f.remove()
-    }
+    };
+    document.querySelector('.input-file-button-text').innerText = 'Выбрать файл';
+
 }
