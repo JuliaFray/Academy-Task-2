@@ -110,7 +110,7 @@ function createMask(input, pattern) {
 //                input.value = input.value.replace(/[^\w]/g, '');
             }
         } else {
-            input.value = input.value.replace(/[\a-zA-Z]/g, '');
+            input.value = input.value.replace(/[\a-zA-Zа-яА-Я]/g, '');
         }
 
     })
