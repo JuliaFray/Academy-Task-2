@@ -22,14 +22,18 @@ function createInput(form, tempFields) {
         } else if (k.input.type == 'color') {
             input = document.createElement('select');
             input.required = k.input.required;
-            
+
 
             for (var i = 0; i <= k.input.colors.length; i++) {
                 if (k.input.colors[i]) {
                     let option = document.createElement('option');
-//                    console.log(k.input.colors[i])
+                    //                    console.log(k.input.colors[i])
                     option.text = k.input.colors[i];
                     option.value = k.input.colors[i];
+                    input.appendChild(option);
+                } else {
+                    let option = document.createElement('option');
+                    option.text = 'choose your color';
                     input.appendChild(option);
                 }
 
@@ -167,19 +171,35 @@ function createForm(data) {
             createReferences(form, tempRef)
         }
     }
-
+    // change bg color
     var select = document.querySelector('select');
     if (select) {
         select.addEventListener('change', function (e) {
             var options = select.querySelectorAll('option');
             var count = options.length;
             for (var o of options) {
-                if (o.selected) {
-                    form.style.backgroundColor = o.value
+                if (o.selected && o !== options[options.length - 1]) {
+                    form.style.backgroundColor = o.value;
+
+    
+                } else if (o.selected && o == options[options.length - 1]) {
+                    //choose your color
+                    let addedSelect = document.createElement('input');;
+                    addedSelect.type = 'color';
+                    addedSelect.id = 'addedSelect';
+                    if (!document.getElementById('addedSelect')) {
+                        form.appendChild(addedSelect);
+                    }
+                    addedSelect.addEventListener('change', function() {
+                        form.style.backgroundColor = addedSelect.value;
+                    })
+
                 }
             }
         });
     }
+    
+    
 
 };
 
