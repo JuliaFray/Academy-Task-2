@@ -53,15 +53,17 @@ function createInput(form, tempFields) {
             k.input.placeholder ? input.placeholder = k.input.placeholder : '';
             input.ref = k.input.ref;
             div.appendChild(input)
-            if (k.input.filetype) {
-                var filetype = []
-                for (var ft of k.input.filetype) {
-                    filetype.push('.' + ft);
-                    input.accept = filetype
-                }
 
-            } else {
-                input.accept = 'image/*'
+            if (k.input.filetype) {
+                if (Array.isArray(k.input.filetype)) {
+                    var filetype = []
+                    for (var ft of k.input.filetype) {
+                        filetype.push('.' + ft);
+                        input.accept = filetype
+                    }
+                } else {
+                    input.accept = 'image/*'
+                }
             }
         }
 
@@ -73,27 +75,46 @@ function createInput(form, tempFields) {
         }
 
         if (k.input.mask) {
-            createMask(k, input)
+            input.type = 'tel';
+            var pattern = k.input.mask;
+            input.setAttribute('maxlength', pattern.length);
+            createMask(input, pattern);
         }
+
+
         form.appendChild(div);
     }
 }
-
-const createMask = (k, input) => {
-    var pattern = k.input.mask;
+//создание маски
+function createMask(input, pattern) {
     input.addEventListener('focus', function (e) {
-        input.placeholder = pattern;
-        console.log(pattern);
-        console.log(input.value)
-        //        if (input.value !== pattern) {
-        //            console.log(pattern)
-        //            input.style.borderColor = 'red'
-        //        }
+        if (input.value !== '+' && pattern[0] == '+') {
+            input.value = '+'
+        }
+    })
+    input.addEventListener('keyup', function (e) {
+        if (!isNaN(e.key)) {
+            var current = input.value.length;
+            if (current < pattern.length) {
+                if (isNaN(pattern[current]) || pattern[current] == ' ') {
+                    if (isNaN(pattern[current + 1]) || pattern[current + 1] == ' ') {
+                        input.value += pattern[current];
+                        input.value += pattern[current + 1];
+                    } else {
+                        input.value += pattern[current];
+                    }
+
+                }
+            } else {
+                input.setAttribute('readonly', input)
+//                input.value = input.value.replace(/[^\w]/g, '');
+            }
+        } else {
+            input.value = input.value.replace(/[\a-zA-Z]/g, '');
+        }
+
     })
 }
-
-
-
 
 //функция создания кнопок
 function createButton(form, tempButtons) {
@@ -179,32 +200,6 @@ function createForm(data) {
     }
 };
 
-//оформление кнопки загрузки. отображение количества загруженных файлов
-//let inputs = document.querySelectorAll('.input-file');
-//Array.prototype.forEach.call(inputs, function (input) {
-//    let label = input.nextElementSibling,
-//        labelVal = document.querySelector('.input-file-button-text').innerText;
-//    let countFiles = '';
-//
-//    input.addEventListener('change', function (e) {
-//        if (!countFiles) {
-//            if (this.files && this.files.length >= 1)
-//                countFiles = this.files.length;
-//        } else {
-//            if (this.files && this.files.length >= 1)
-//                countFiles = countFiles + this.files.leng
-//        }
-//        if (countFiles) {
-//            label.querySelector('.input-file-button-text').innerText = 'Выбрано файлов: ' + countFiles;
-//        } else {
-//            label.querySelector('.input-file-button-text').innerText = labelVal
-//        }
-//        //        
-//
-//
-//    })
-//})
-
 let counter = 0;
 //подсчет загруженных файлов
 function filesCounter(input) {
@@ -218,15 +213,11 @@ function filesCounter(input) {
     } else {
         document.querySelector('.input-file-button-text').innerText = 'Выбрать файлы'
     }
-
-    console.log(counter);
 }
 
 //загрузка всех файлов, чтение данных как текст и вызов функции формирования формы
 function readFile(input) {
-
     filesCounter(input);
-
     for (var i = 0; i < input.files.length; i++) {
 
         var file = input.files[i];
@@ -241,8 +232,6 @@ function readFile(input) {
         };
         reader.readAsText(file);
     };
-
-
 };
 
 //повторное генерирование форм из файлов
@@ -258,7 +247,6 @@ function regenFile() {
 function resetForm() {
     var input = document.querySelector('.input-file');
     counter = 0;
-
 
     var form = document.querySelectorAll('form');
     for (var f of form) {
