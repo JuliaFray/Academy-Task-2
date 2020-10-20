@@ -20,30 +20,29 @@ function createInput(form, tempFields) {
             }
             div.appendChild(input)
         } else if (k.input.type == 'color') {
-            input = document.createElement('select');
+            input = document.createElement('input');
+            input.type = k.input.type;
+            input.id = 'colorInput'
             input.required = k.input.required;
-
+            input.setAttribute('list', 'colorsList');
+            let datalist = document.createElement('datalist');
+            datalist.id = 'colorsList';
+            input.appendChild(datalist)
 
             for (var i = 0; i <= k.input.colors.length; i++) {
                 if (k.input.colors[i]) {
                     let option = document.createElement('option');
-                    //                    console.log(k.input.colors[i])
                     option.text = k.input.colors[i];
                     option.value = k.input.colors[i];
-                    input.appendChild(option);
-                } else {
-                    let option = document.createElement('option');
-                    option.text = 'choose your color';
-                    input.appendChild(option);
+                    datalist.appendChild(option);
                 }
-
             }
 
             if (k.input.multiple) {
                 input.setAttribute('multiple', input)
             }
-
             div.appendChild(input)
+
         } else {
             input = document.createElement('input');
             input.type = k.input.type;
@@ -172,66 +171,61 @@ function createForm(data) {
         }
     }
     // change bg color
-    var select = document.querySelector('select');
+    var select = document.getElementById('colorInput');
     if (select) {
         select.addEventListener('change', function (e) {
-            var options = select.querySelectorAll('option');
-            var count = options.length;
-            for (var o of options) {
-                if (o.selected && o !== options[options.length - 1]) {
-                    form.style.backgroundColor = o.value;
-
-    
-                } else if (o.selected && o == options[options.length - 1]) {
-                    //choose your color
-                    let addedSelect = document.createElement('input');;
-                    addedSelect.type = 'color';
-                    addedSelect.id = 'addedSelect';
-                    if (!document.getElementById('addedSelect')) {
-                        form.appendChild(addedSelect);
-                    }
-                    addedSelect.addEventListener('change', function() {
-                        form.style.backgroundColor = addedSelect.value;
-                    })
-
-                }
-            }
+            form.style.backgroundColor = select.value;
         });
     }
-    
-    
-
 };
 
 //оформление кнопки загрузки. отображение количества загруженных файлов
-let inputs = document.querySelectorAll('.input-file');
+//let inputs = document.querySelectorAll('.input-file');
+//Array.prototype.forEach.call(inputs, function (input) {
+//    let label = input.nextElementSibling,
+//        labelVal = document.querySelector('.input-file-button-text').innerText;
+//    let countFiles = '';
+//
+//    input.addEventListener('change', function (e) {
+//        if (!countFiles) {
+//            if (this.files && this.files.length >= 1)
+//                countFiles = this.files.length;
+//        } else {
+//            if (this.files && this.files.length >= 1)
+//                countFiles = countFiles + this.files.leng
+//        }
+//        if (countFiles) {
+//            label.querySelector('.input-file-button-text').innerText = 'Выбрано файлов: ' + countFiles;
+//        } else {
+//            label.querySelector('.input-file-button-text').innerText = labelVal
+//        }
+//        //        
+//
+//
+//    })
+//})
 
-Array.prototype.forEach.call(inputs, function (input) {
-    let label = input.nextElementSibling,
-        labelVal = document.querySelector('.input-file-button-text').innerText;
-    let countFiles = '';
+let counter = 0;
+//подсчет загруженных файлов
+function filesCounter(input) {
 
-    input.addEventListener('change', function (e) {
-        if (!countFiles) {
-            if (this.files && this.files.length >= 1)
-                countFiles = this.files.length;
-        } else {
-            if (this.files && this.files.length >= 1)
-                countFiles = countFiles + this.files.leng
-        }
-        if (countFiles) {
-            label.querySelector('.input-file-button-text').innerText = 'Выбрано файлов: ' + countFiles;
-        } else {
-            label.querySelector('.input-file-button-text').innerText = labelVal
-        }
-        //        
+    if (input) {
+        counter = counter + input.files.length
+    }
 
+    if (counter) {
+        document.querySelector('.input-file-button-text').innerText = 'Выбрано файлов: ' + counter;
+    } else {
+        document.querySelector('.input-file-button-text').innerText = 'Выбрать файлы'
+    }
 
-    })
-})
+    console.log(counter);
+}
 
 //загрузка всех файлов, чтение данных как текст и вызов функции формирования формы
 function readFile(input) {
+
+    filesCounter(input);
 
     for (var i = 0; i < input.files.length; i++) {
 
@@ -263,7 +257,7 @@ function regenFile() {
 //удаление всех форм
 function resetForm() {
     var input = document.querySelector('.input-file');
-
+    counter = 0;
 
 
     var form = document.querySelectorAll('form');
